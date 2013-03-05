@@ -10,6 +10,8 @@
 
 #ifdef RGBLEDMOD
 #define playTone ToneOut
+long last_photo;
+
 #endif
 
 int current_state = 0; //0==first time through, 1==photo booth mode, 2==time lapse mode, 3==sound activated mode
@@ -158,7 +160,11 @@ void photo_booth()
   if(button_state == 1)
   {
     camera_wakeup();
-    
+#ifdef RGBLEDMOD
+    digitalWrite(REDLED, LOW);
+    digitalWrite(GREENLED, HIGH);
+    digitalWrite(BLUELED, HIGH);
+#endif
     for(int i = 1; i<5; i++)
     {
       photo_light(i);
@@ -170,21 +176,46 @@ void photo_booth()
     
     for(int photo_number = 4; photo_number>0; photo_number--)
     {
+#ifdef RGBLEDMOD 
       photo_show(photo_number);
       countdown(3, photo_number); 
       digitalWrite(USB_REMOTE, HIGH);
       show(0);
+      digitalWrite(REDLED, HIGH);
       PlayNote(0,800);
       digitalWrite(USB_REMOTE, LOW);     
       //take_a_picture_booth();
+      delay(100);
+      digitalWrite(REDLED, LOW);
+      digitalWrite(GREENLED, LOW);
+      digitalWrite(BLUELED, LOW);
+      delay(100);
+      digitalWrite(GREENLED, HIGH);
+      digitalWrite(REDLED, HIGH);
+      digitalWrite(BLUELED, HIGH);
+      delay(300);
+      digitalWrite(REDLED, LOW);
+      //delay(500);
+#else
+       photo_show(photo_number);
+      countdown(3, photo_number);    
+      take_a_picture_booth();
+#endif
       
     }
+#ifdef RGBLEDMOD    
+    last_photo = millis();
+    digitalWrite(REDLED, HIGH);
+    digitalWrite(GREENLED, LOW);
+    digitalWrite(BLUELED, HIGH);
+#endif
   }
   
   else
   {
     show(0);
 #ifdef RGBLEDMOD
+  if(millis()-last_photo > 10000)
     additude();
 #endif
   }
@@ -447,9 +478,9 @@ void countdown(int number, int note)
 //called every 50ms (or whatever the delay is set too) and the button is not pressed. 
 void additude(){
   
-  int roll = random(0,100);
+  int roll = random(0,120);
   
-  if(roll == 50) {
+  if(roll == 42) {
     
     roll = random(0,5);
     

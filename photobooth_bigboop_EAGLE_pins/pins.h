@@ -1,5 +1,8 @@
 //pins and settings for the photobooth
 
+
+#define RGBLEDMOD
+
 //  **** editable settings ****
 #define SOUNDLEVEL 1 //numbers between 1 and 10 work well. Higher numbers = less sensitive to sound triggering
 
@@ -25,9 +28,6 @@
 #define TURN_ON 0
 #define TURN_OFF 1
 
-//IR LED for IR remote only cameras
-#define IR_LED 13
-
 //PWM pins to display which photo is being taken 
 #define PIN_1 9 
 #define PIN_2 10 
@@ -45,6 +45,15 @@
 //speaker - must be a pin that can do analog in and PWM
 #define PIEZO_PIN 14
 
+#ifdef RGBLEDMOD
+//Use 3 IO not needed for Canon mode to run a RGB LED
+#define REDLED 13
+#define GREENLED 17
+#define BLUELED 18
+#else
 //wired remote
 #define WIRED_FOCUS 17
 #define WIRED_SHUTTER 18
+//IR LED for IR remote only cameras
+#define IR_LED 13
+#endif

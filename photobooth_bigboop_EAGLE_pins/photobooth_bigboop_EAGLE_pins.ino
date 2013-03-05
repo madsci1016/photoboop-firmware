@@ -8,6 +8,10 @@
 #include "music.h"
 #include "lights.h"
 
+#ifdef RGBLEDMOD
+#define playTone ToneOut
+#endif
+
 int current_state = 0; //0==first time through, 1==photo booth mode, 2==time lapse mode, 3==sound activated mode
 int interval_time = 0; 
 
@@ -27,16 +31,25 @@ void setup()
   pinMode(PIN_4, OUTPUT);
   
   pinMode(PIEZO_PIN, OUTPUT);
-
   pinMode(BUTTON_PIN, INPUT);
-
   pinMode(USB_REMOTE, OUTPUT);
-
+#ifdef RGBLEDMOD
+  pinMode(REDLED, OUTPUT);
+  pinMode(GREENLED, OUTPUT);
+  pinMode(BLUELED, OUTPUT);
+  
+  digitalWrite(REDLED, HIGH);
+  digitalWrite(GREENLED, HIGH);
+  digitalWrite(BLUELED, LOW);
+  
+  randomSeed(analogRead(6));
+#else
   pinMode(WIRED_FOCUS, OUTPUT);
   pinMode(WIRED_SHUTTER, OUTPUT);
   
   digitalWrite(WIRED_FOCUS,0);
   digitalWrite(WIRED_SHUTTER,0);
+#endif
 
   //a quick test of the displays
   for(int i = 0; i<10; i++)
@@ -158,14 +171,22 @@ void photo_booth()
     for(int photo_number = 4; photo_number>0; photo_number--)
     {
       photo_show(photo_number);
-      countdown(3, photo_number);        
-      take_a_picture_booth();
+      countdown(3, photo_number); 
+      digitalWrite(USB_REMOTE, HIGH);
+      show(0);
+      PlayNote(0,800);
+      digitalWrite(USB_REMOTE, LOW);     
+      //take_a_picture_booth();
+      
     }
   }
   
   else
   {
     show(0);
+#ifdef RGBLEDMOD
+    additude();
+#endif
   }
 }
 
@@ -274,7 +295,9 @@ int time_lapse_setup()
 void camera_wakeup()
 {
   //triggers the remote so the camera wakes up
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_FOCUS,HIGH);
+#endif
   digitalWrite(USB_REMOTE,HIGH);
   //digitalWrite(WIRED_SHUTTER,HIGH);
   delay(CAMERA_TRIGGER_DELAY);
@@ -286,8 +309,10 @@ void camera_wakeup()
   //digitalWrite(USB_REMOTE,HIGH);
 //  digitalWrite(WIRED_SHUTTER,HIGH);
 //  delay(CAMERA_TRIGGER_DELAY);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_SHUTTER,LOW);
   digitalWrite(WIRED_FOCUS,LOW);
+#endif
   digitalWrite(USB_REMOTE,LOW);
 }
 
@@ -319,7 +344,9 @@ void take_a_picture()
   //if needed, make CAMERA_TRIGGER_DELAY longer
   
   circle(0);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_FOCUS,HIGH);
+#endif
   digitalWrite(USB_REMOTE,HIGH);
   delay(CAMERA_TRIGGER_DELAY);
 
@@ -331,7 +358,9 @@ void take_a_picture()
   delay(CAMERA_TRIGGER_DELAY);
   
   circle(3);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_SHUTTER,HIGH);
+#endif
   delay(CAMERA_TRIGGER_DELAY);
   
   circle(4);
@@ -340,8 +369,10 @@ void take_a_picture()
   
   circle(5);
   delay(CAMERA_TRIGGER_DELAY);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_FOCUS,LOW);
   digitalWrite(WIRED_SHUTTER,LOW);
+#endif
   digitalWrite(USB_REMOTE,LOW);
 }
 
@@ -352,7 +383,9 @@ void take_a_picture_booth()
   //if needed, make CAMERA_TRIGGER_DELAY longer
   
   show(0);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_FOCUS,HIGH);
+#endif
   digitalWrite(USB_REMOTE,HIGH);
   delay(CAMERA_TRIGGER_DELAY);
 
@@ -368,7 +401,9 @@ void take_a_picture_booth()
   
   photo_light_all();
   segments_on();
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_SHUTTER,HIGH);
+#endif
   delay(CAMERA_TRIGGER_DELAY/2);
   photo_dark_all();
   segments_off();  
@@ -382,8 +417,10 @@ void take_a_picture_booth()
   segments_off();
   
   delay(CAMERA_TRIGGER_DELAY);
+#ifndef RGBLEDMOD
   digitalWrite(WIRED_FOCUS,LOW);
   digitalWrite(WIRED_SHUTTER,LOW);
+#endif
   digitalWrite(USB_REMOTE,LOW);
 
   //an extra flash for good measure
@@ -406,7 +443,88 @@ void countdown(int number, int note)
   }
 }
 
+#ifdef RGBLEDMOD
+//called every 50ms (or whatever the delay is set too) and the button is not pressed. 
+void additude(){
+  
+  int roll = random(0,100);
+  
+  if(roll == 50) {
+    
+    roll = random(0,5);
+    
+     switch(roll){
+      case 0:
+        digitalWrite(REDLED,HIGH);
+        digitalWrite(BLUELED,LOW);
+      break;
+      case 1:
+        digitalWrite(GREENLED,HIGH);
+        digitalWrite(REDLED,LOW);
+      break;
+      case 2:
+        digitalWrite(BLUELED,HIGH);
+        digitalWrite(GREENLED,LOW);
+      break;
+      case 3:
+        digitalWrite(REDLED,LOW);
+      break;
+      case 4:
+        digitalWrite(GREENLED,LOW);
+      break;
+      case 5:
+        digitalWrite(BLUELED,LOW);
+      break;
+    }
+
+    roll = random(0,3);
+    
+    switch(roll){
+      case 0:
+        playTone(260, 70);
+        playTone(280, 70);
+        playTone(300, 70);
+      break;
+      case 1:
+        playTone(80, 70);
+        playTone(100, 70);
+        playTone(120, 70);
+      break;
+      case 2:
+        playTone(200, 70);
+        playTone(300, 140);
+        playTone(100, 70);
+      break;
+      case 3:
+        playTone(150, 100);
+        playTone(100, 70);
+        playTone(200, 80);
+        playTone(300, 70);
+      break;
+      case 4:
+        playTone(80, 100);
+        playTone(60, 70);
+        playTone(30, 80);
+      break;
+    }
+    
+    /*
+    digitalWrite(BLUELED, LOW);
+    for(int i=300; i<=350; i++)
+      ToneOut(i, 8);
+    digitalWrite(BLUELED, HIGH);
+    digitalWrite(GREENLED, LOW);
+    for(int i=350; i>=300; i--)
+      ToneOut(i, 8);
+    digitalWrite(GREENLED, HIGH);
+    */
+  }
+  
+
+}
 
 
+
+#endif
 
 

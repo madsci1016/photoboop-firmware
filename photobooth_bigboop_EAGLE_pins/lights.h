@@ -1,4 +1,4 @@
-#include "WProgram.h"
+#include "Arduino.h"
 
 void photo_light(int number)
 {

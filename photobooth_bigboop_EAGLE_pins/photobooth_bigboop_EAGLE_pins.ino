@@ -477,7 +477,7 @@ void additude(){
       break;
     }
 
-    roll = random(0,3);
+    roll = random(0,4);
     
     switch(roll){
       case 0:

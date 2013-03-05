@@ -20,3 +20,5 @@ Two of the solder connections in each of the three transistors had to be shorted
 The code was modified to add a #define RGBLEDMOD to trigger repurpusing the IO pins. A new function is called every time the code loops and the button is not pressed. This function will randomly play some various chirps through the piezo and change the LED color in hope to attract attention of people passing by. Tones copied from RoboBrrd by RobotGrrl.  
 
 I also altered the camera capture sequence in a quick and dirty way to change the behavior in a favorable way to me. Timer counts to 0, tells camera to focus, plays a tone and then tells camera to take a picture. 
+
+File structure changed to make it Arduino friendly directly from Github. 

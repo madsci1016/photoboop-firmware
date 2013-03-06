@@ -17,7 +17,7 @@ The anode was connected to the IR LED + screw terminal, RED cathode to IR LED - 
 
 Two of the solder connections in each of the three transistors had to be shorted to connect the screw terminals directly to the AVR processor. 
 
-The code was modified to add a #define RGBLEDMOD to trigger repurpusing the IO pins. A new function is called every time the code loops and the button is not pressed. This function will randomly play some various chirps through the piezo and change the LED color in hope to attract attention of people passing by. See it in action: http://www.youtube.com/watch?v=YZ8UC5MP_t0 Tones copied from RoboBrrd by RobotGrrl.  
+The code was modified to add a #define RGBLEDMOD to trigger repurpusing the IO pins. A new function is called every time the code loops and the button is not pressed. This function will randomly play some various chirps through the piezo and change the LED color in hope to attract attention of people passing by. See it in action: http://www.youtube.com/watch?v=3_g0e5J53Xo Tones copied from RoboBrrd by RobotGrrl.  
 
 I also altered the camera capture sequence in a quick and dirty way to change the behavior in a favorable way to me. Timer counts to 0, tells camera to focus, plays a tone and then tells camera to take a picture. 
 
